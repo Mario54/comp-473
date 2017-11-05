@@ -1,7 +1,10 @@
 import random
+from optparse import OptionParser
 
 from PIL import Image, ImageDraw, ImageFont
 import os
+
+from multiprocessing import Process
 
 
 def generate_img(font, path):
@@ -55,22 +58,57 @@ fonts = [
     "Courier New",
     "Trebuchet MS",
     "Verdana",
+    "EBGaramond"
 ]
 
 if not os.path.exists("data"):
     os.makedirs("data")
-    os.makedirs("test_data")
 
 num_test_images = 1000
 
-for font_name in fonts:
+
+def generate_images(font_name):
     if not os.path.exists(os.path.join("data", font_name)):
         os.makedirs(os.path.join("data", font_name))
 
-    i = 0
+    fifty_percent = False
 
     for i in range(num_test_images):
-        print(font_name + ": " + str(i) + "/{}".format(num_test_images), end="\r")
+        # print(font_name + ": " + str(i) + "/{}".format(num_test_images), end="\r")
         generate_img(font_name, "data/{}/{}.png".format(font_name, i))
 
-    print("                                               ", end="\r")
+        if i / num_test_images > 0.5 and not fifty_percent:
+            fifty_percent = True
+            print(font_name + ": 50% done.")
+        elif (i + 1) == num_test_images:
+            print(font_name + ": 100% done.")
+
+            # print("                                               ", end="\r")
+
+
+if __name__ == '__main__':
+    parser = OptionParser()
+    parser.add_option("-f", "--font", dest="font",
+                      help="generate images for a specific font, instead of all fonts")
+    parser.add_option("-n", dest="num_images", type="int",
+                      help="number of images to generate for each font. Default is 1000")
+
+    (options, args) = parser.parse_args()
+
+    if options.num_images is not None:
+        num_test_images = options.num_images
+
+    if options.font is not None:
+        generate_images(options.font)
+        exit()
+
+    processes = []
+
+    for font_name in fonts:
+        # generate_images(font_name)
+        p = Process(target=generate_images, args=(font_name,))
+        p.start()
+        processes.append(p)
+
+    for proc in processes:
+        proc.join()
