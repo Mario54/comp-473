@@ -7,6 +7,7 @@ name = "pypi"
 
 [dev-packages]
 
+ipdb = "*"
 
 
 [packages]
@@ -16,6 +17,8 @@ numpy = "*"
 scipy = "*"
 scikit-image = "*"
 scikit-learn = "*"
+tqdm = "*"
+randomwords = "*"
 
 
 [requires]
