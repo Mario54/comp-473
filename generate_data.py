@@ -42,8 +42,9 @@ def generate_img(font, path, ext="ttf"):
 
     text_size = random.choice([25, 30, 35])
 
-    print("{}.{}".format(font, ext))
-    font = ImageFont.truetype(os.path.join("fonts", "{}{}".format(font, ext)), text_size)
+    font_path = os.path.join("fonts", "{}.{}".format(font, ext))
+    print(font_path)
+    font = ImageFont.truetype(font_path, text_size)
     text = text.replace('\n', NEWLINE_REPLACEMENT_STRING)
 
     lines = []
